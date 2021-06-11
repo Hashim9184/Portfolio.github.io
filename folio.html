@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="folio.css">
+  </link>
+  <link rel="stylesheet" href="animation.css">
+  <title>Hashim Shaikh's Portfolio</title>
+</head>
+
+<body>
+  <div class="front">
+    <div id="wallpaper" class="wallpaper" data-image="pexels-travis-blessing-1363876.jpg"></div>
+    <div class="content">
+      <aside class="side">
+        <figure id="picture" class="picture">
+          <div class="picture-shadow"></div>
+          <img id="pictureImage" class="picture-image" src="/Image/vincentiu-solomon-Z4wF0h47fy8-unsplash.jpg"
+            alt="Portrait of Hashim Shaikh" width="320" height="320">
+        </figure>
+      </aside>
+      <main class="about">
+        <h1 class="name">
+          Hi, I'm Hashim Shaikh
+        </h1>
+        <p class="job">
+          Web Developer
+        </p>
+        <hr class="hr">
+        <div class="description">
+          <p>
+            I spend most of my time learning new stuff and making websites.
+          </p>
+        </div>
+        <div class="contact">
+          <a class="button" href="mailto:hashim.shaikh01984@gmail.com">
+            Get in touch
+          </a>
+        </div>
+        <ul class="social">
+          <li>
+            <a href="https://www.instagram.com/hashim.9184/">
+              <abbr title="Instagram"><i class="fab fa-instagram"></i></abbr>
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/Hashim9184">
+              <abbr title="GitHub"><i class="fab fa-github"></i></abbr>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/in/hashim-shaikh-8aa63a1ba/">
+              <abbr title="LinkedIn"><i class="fab fa-linkedin"></i></abbr>
+            </a>
+          </li>
+        </ul>
+      </main>
+    </div>
+  </div>
+  <div class="container">
+    <div class="heading">Check Out My Awesome Projects</div>
+    <div class="video-container">
+      <div class="video">
+        <abbr title="OS info webpage design using Html5, Css, Js and Php."><video src="/Videos/OS Web.mp4"
+            muted></video></abbr>
+      </div>
+      <div class="video">
+        <abbr title="Glassmorphism Cards design using Html5 and Css."><video src="/Videos/Glass card.mp4"
+            muted></video></abbr>
+      </div>
+      <div class="video">
+        <abbr title="Glassmorphism Webpage design using Html5 and Css."><video
+            src="/Videos/Glassmorphism Website - Brave 2021-06-09 19-49-47.mp4" muted></video></abbr>
+      </div>
+      <div class="video">
+        <abbr title="Kart Landing Page using Html5 and Css"><video
+            src="/Videos/Home-Kart - Google Chrome 2021-02-21 12-20-07.mp4" muted></video></abbr>
+      </div>
+      <div class="video">
+        <abbr title="Parallax Webpage using Html5 and Css"><video
+            src="/Videos/Parallax Website - Brave 2021-06-09 19-52-12.mp4" muted></video></abbr>
+      </div>
+      <div class="video">
+        <abbr title="myTuner Webpage using Html5 and Css"><video src="/Videos/myTuner - Brave 2021-06-09 19-53-21.mp4"
+            muted></video></abbr>
+      </div>
+      <div class="video">
+        <abbr title="Js Timer using Html5, Css ang Js"><video src="/Videos/JS Timer - Brave 2021-06-11 15-02-20.mp4"
+            muted></video></abbr>
+      </div>
+    </div>
+  </div>
+  <footer>&#169;2021 Hashim Shaikh. Made in India.</footer>
+</body>
+
+
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/all.js"></script>
+<script>
+  var video = document.querySelectorAll('video')
+
+  video.forEach(play => play.addEventListener('click', () => {
+    play.classList.toggle('active');
+
+    if (play.paused) {
+      play.play();
+    } else {
+      play.pause()
+      play.currentTime = 0;
+    }
+  }));
+</script>
+
+</html>
