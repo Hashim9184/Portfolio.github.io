@@ -39,7 +39,7 @@ a {
     width: 100%;
 }
 .wallpaper {
-    background-image: url("/Image/pexels-travis-blessing-1363876.jpg");
+    background-image: url("./Image/pexels-travis-blessing-1363876.jpg");
     background-position: center;
     background-size: cover;
     opacity: 0.2;
