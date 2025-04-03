@@ -25,7 +25,7 @@ Clone the repository:
 bash
 Copy
 Edit
-git clone https://github.com/your-username/your-portfolio.git
+git clone https://hashim9184.github.io/Portfolio.github.io/
 Open index.html in a browser.
 
 📢 Feedback & Contributions
