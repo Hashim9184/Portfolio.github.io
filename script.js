@@ -116,6 +116,7 @@ ready(() => {
 
     if (lightbox && visualTriggers.length > 0) {
         const lightboxMedia = lightbox.querySelector('[data-lightbox-media]');
+        const lightboxDialog = lightbox.querySelector('.lightbox__dialog');
         const lightboxTitle = lightbox.querySelector('[data-lightbox-title]');
         const lightboxDesc = lightbox.querySelector('[data-lightbox-desc]');
         const closeBtn = lightbox.querySelector('[data-lightbox-close]');
@@ -161,6 +162,7 @@ ready(() => {
             }
 
             lightboxMedia.innerHTML = '';
+            lightboxDialog?.classList.remove('app-launch');
             const fallbackAlt =
                 alt ||
                 trigger.getAttribute('aria-label') ||
@@ -168,6 +170,12 @@ ready(() => {
                 '';
             const mediaNode = buildMediaNode(type, resolvedSrc, fallbackAlt);
             lightboxMedia.appendChild(mediaNode);
+
+            if (lightboxDialog && type === 'video') {
+                requestAnimationFrame(() => {
+                    lightboxDialog.classList.add('app-launch');
+                });
+            }
 
             if (lightboxTitle) {
                 lightboxTitle.textContent = title || 'Project preview';
@@ -196,6 +204,7 @@ ready(() => {
             lightbox.setAttribute('aria-hidden', 'true');
             document.body.classList.remove('lightbox-open');
             lightboxMedia.innerHTML = '';
+            lightboxDialog?.classList.remove('app-launch');
 
             if (lastFocusedElement) {
                 lastFocusedElement.focus();

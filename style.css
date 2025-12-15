@@ -705,14 +705,19 @@ body.theme-light .theme-toggle__icon {
 .visual-btn {
     flex: 1 1 140px;
     min-width: 140px;
-    text-align: center;
     padding: 0.75rem 1.25rem;
     border-radius: var(--radius-lg);
     border: 1px solid transparent;
     text-decoration: none;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
     color: #050505;
     background: linear-gradient(120deg, rgba(140, 146, 255, 0.9), rgba(193, 196, 255, 0.7));
-    font-weight: 600;
     transition: transform 0.5s var(--spring), border 0.3s ease;
 }
 
@@ -846,6 +851,11 @@ body.theme-light .theme-toggle__icon {
     animation: fadeUp 0.35s var(--spring) forwards;
 }
 
+.lightbox__dialog.app-launch {
+    animation: iosLaunch 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-origin: center;
+}
+
 .lightbox__media {
     position: relative;
 }
@@ -899,6 +909,22 @@ body.lightbox-open {
 @keyframes fadeUp {
     to {
         transform: translateY(0);
+    }
+}
+
+@keyframes iosLaunch {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.6;
+        border-radius: 24px;
+    }
+    60% {
+        transform: scale(1.03);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        border-radius: 0;
     }
 }
 
