@@ -126,16 +126,14 @@ ready(() => {
             let currentIndex = 0;
             let rafId = null;
 
-            const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-
             const scrollToSlide = (index, smooth = true) => {
                 const normalized = (index + slides.length) % slides.length;
                 const slide = slides[normalized];
                 const viewportWidth = track.clientWidth;
                 const slideWidth = slide.clientWidth;
-                const target = slide.offsetLeft - 16;
+                const target = slide.offsetLeft - (viewportWidth - slideWidth) / 2;
                 const maxScroll = track.scrollWidth - viewportWidth;
-                const clamped = clamp(target, 0, Math.max(0, maxScroll));
+                const clamped = Math.min(Math.max(target, 0), Math.max(0, maxScroll));
 
                 track.scrollTo({
                     left: clamped,
