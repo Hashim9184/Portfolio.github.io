@@ -247,144 +247,122 @@
                 <h2>Showcase clips for AI, cloud, and product builds.</h2>
                 <p>Zoomable previews, motion shots, and quick context for how I ship production-ready experiences.</p>
             </div>
-            <div
-                class="visuals-carousel"
-                data-visuals-carousel
-                tabindex="0"
-                aria-label="Project visuals carousel"
-            >
-                <div class="visuals-window">
-                    <div class="visuals-track" data-visuals-track>
-                        <article class="visual-card" data-visual-slide>
-                            <div class="visual-media">
-                                <button
-                                    class="visual-trigger"
-                                    type="button"
-                                    data-visual-trigger
-                                    data-type="image"
-                                    data-src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80"
-                                    data-alt="Realtime AI ops control center dashboard"
-                                    data-title="AI Ops Control Room"
-                                    data-summary="Telemetry-rich dashboard for GPU workloads, autoscaling signals, and policy guardrails."
-                                    aria-label="Open gallery for AI Ops Control Room"
-                                >
-                                    <img
-                                        src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
-                                        alt="Screenshot of an AI operations control center dashboard"
-                                        loading="lazy"
-                                    />
-                                </button>
-                                <div class="visual-overlay">
-                                    <p>Observability-first AI ops command center.</p>
-                                </div>
-                            </div>
-                            <div class="visual-content">
-                                <h3>AI Ops Control Room</h3>
-                                <p>Mission control for GPU pipelines with live alerting and policy-as-code interventions.</p>
-                                <ul class="tech-list">
-                                    <li>Next.js</li>
-                                    <li>Azure Monitor</li>
-                                    <li>Terraform</li>
-                                </ul>
-                                <div class="visual-links">
-                                    <a class="visual-btn" href="https://performa-ai.dev" target="_blank" rel="noreferrer">Live Demo</a>
-                                    <a class="visual-btn ghost" href="https://github.com/Hashim9184/ai-ops-control" target="_blank" rel="noreferrer">GitHub Repo</a>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="visual-card" data-visual-slide>
-                            <div class="visual-media">
-                                <button
-                                    class="visual-trigger"
-                                    type="button"
-                                    data-visual-trigger
-                                    data-type="video"
-                                    data-src="Videos/Glass%20card.mp4"
-                                    data-title="Realtime Interview Insights"
-                                    data-summary="Interactive mock interview recording that streams scoring metrics while candidates respond."
-                                    aria-label="Play demo video for Realtime Interview Insights"
-                                >
-                                    <img
-                                        src="https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=900&q=80"
-                                        alt="Dashboard mockup showing interview analytics"
-                                        loading="lazy"
-                                    />
-                                </button>
-                                <div class="visual-overlay">
-                                    <p>Live video &amp; sentiment overlays.</p>
-                                </div>
-                            </div>
-                            <div class="visual-content">
-                                <h3>Realtime Interview Insights</h3>
-                                <p>Coach candidates with synchronized video, audio, and AI scoring heuristics.</p>
-                                <ul class="tech-list">
-                                    <li>Next.js</li>
-                                    <li>OpenAI Realtime</li>
-                                    <li>WebRTC</li>
-                                </ul>
-                                <div class="visual-links">
-                                    <a class="visual-btn" href="https://realtime-interviews.ai" target="_blank" rel="noreferrer">Live Demo</a>
-                                    <a class="visual-btn ghost" href="https://github.com/Hashim9184/realtime-interviews" target="_blank" rel="noreferrer">GitHub Repo</a>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="visual-card" data-visual-slide>
-                            <div class="visual-media">
-                                <button
-                                    class="visual-trigger"
-                                    type="button"
-                                    data-visual-trigger
-                                    data-type="image"
-                                    data-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1600&q=80"
-                                    data-alt="Screenshot of autonomous pipelines dashboard"
-                                    data-title="Autonomous Cloud Pipelines"
-                                    data-summary="Self-healing deployment mesh with golden signals surfaced for every release train."
-                                    aria-label="Open gallery for Autonomous Cloud Pipelines"
-                                >
-                                    <img
-                                        src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=900&q=80"
-                                        alt="Visualization of cloud pipelines and monitoring widgets"
-                                        loading="lazy"
-                                    />
-                                </button>
-                                <div class="visual-overlay">
-                                    <p>Pipeline guardrails and drift detection.</p>
-                                </div>
-                            </div>
-                            <div class="visual-content">
-                                <h3>Autonomous Cloud Pipelines</h3>
-                                <p>Policy-aware deployment mesh rolling updates across hybrid clusters.</p>
-                                <ul class="tech-list">
-                                    <li>Kubernetes</li>
-                                    <li>GitHub Actions</li>
-                                    <li>Grafana</li>
-                                </ul>
-                                <div class="visual-links">
-                                    <a class="visual-btn" href="https://autonomous-pipelines.dev" target="_blank" rel="noreferrer">Live Demo</a>
-                                    <a class="visual-btn ghost" href="https://github.com/Hashim9184/autonomous-pipelines" target="_blank" rel="noreferrer">GitHub Repo</a>
-                                </div>
-                            </div>
-                        </article>
+            <div class="visuals-stack">
+                <article class="visual-card visual-card--stack">
+                    <div class="visual-media">
+                        <button
+                            class="visual-trigger"
+                            type="button"
+                            data-visual-trigger
+                            data-type="image"
+                            data-src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80"
+                            data-alt="Realtime AI ops control center dashboard"
+                            data-title="AI Ops Control Room"
+                            data-summary="Telemetry-rich dashboard for GPU workloads, autoscaling signals, and policy guardrails."
+                            aria-label="Open gallery for AI Ops Control Room"
+                        >
+                            <img
+                                src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
+                                alt="Screenshot of an AI operations control center dashboard"
+                                loading="lazy"
+                            />
+                        </button>
+                        <div class="visual-overlay">
+                            <p>Observability-first AI ops command center.</p>
+                        </div>
                     </div>
-                    <button class="carousel-btn prev" type="button" data-carousel-prev aria-label="View previous visual">
-                        <span aria-hidden="true">&larr;</span>
-                    </button>
-                    <button class="carousel-btn next" type="button" data-carousel-next aria-label="View next visual">
-                        <span aria-hidden="true">&rarr;</span>
-                    </button>
-                </div>
-                <div class="visuals-controls">
-                    <div class="visuals-progress-track" aria-hidden="true">
-                        <span class="visuals-progress-bar" data-carousel-progress></span>
+                    <div class="visual-content">
+                        <p class="visual-eyebrow">Intelligence &bull; GPU Automation</p>
+                        <h3>AI Ops Control Room</h3>
+                        <p>Mission control for GPU pipelines with live alerting and policy-as-code interventions.</p>
+                        <ul class="tech-list">
+                            <li>Next.js</li>
+                            <li>Azure Monitor</li>
+                            <li>Terraform</li>
+                        </ul>
+                        <div class="visual-actions">
+                            <a class="visual-btn solid" href="https://performa-ai.dev" target="_blank" rel="noreferrer">Live Demo</a>
+                            <a class="visual-btn outline" href="https://github.com/Hashim9184/ai-ops-control" target="_blank" rel="noreferrer">GitHub Repo</a>
+                        </div>
                     </div>
-                    <p class="visuals-count">
-                        <span data-carousel-current>01</span>
-                        <span aria-hidden="true">&nbsp;/&nbsp;</span>
-                        <span data-carousel-total>03</span>
-                    </p>
-                </div>
+                </article>
+
+                <article class="visual-card visual-card--stack">
+                    <div class="visual-media">
+                        <button
+                            class="visual-trigger"
+                            type="button"
+                            data-visual-trigger
+                            data-type="video"
+                            data-src="Videos/Glass%20card.mp4"
+                            data-title="Realtime Interview Insights"
+                            data-summary="Interactive mock interview recording that streams scoring metrics while candidates respond."
+                            aria-label="Play demo video for Realtime Interview Insights"
+                        >
+                            <img
+                                src="https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=900&q=80"
+                                alt="Dashboard mockup showing interview analytics"
+                                loading="lazy"
+                            />
+                        </button>
+                        <div class="visual-overlay">
+                            <p>Live video &amp; sentiment overlays.</p>
+                        </div>
+                    </div>
+                    <div class="visual-content">
+                        <p class="visual-eyebrow">Coaching &bull; Realtime AI</p>
+                        <h3>Realtime Interview Insights</h3>
+                        <p>Coach candidates with synchronized video, audio, and AI scoring heuristics.</p>
+                        <ul class="tech-list">
+                            <li>Next.js</li>
+                            <li>OpenAI Realtime</li>
+                            <li>WebRTC</li>
+                        </ul>
+                        <div class="visual-actions">
+                            <a class="visual-btn solid" href="https://realtime-interviews.ai" target="_blank" rel="noreferrer">Live Demo</a>
+                            <a class="visual-btn outline" href="https://github.com/Hashim9184/realtime-interviews" target="_blank" rel="noreferrer">GitHub Repo</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="visual-card visual-card--stack">
+                    <div class="visual-media">
+                        <button
+                            class="visual-trigger"
+                            type="button"
+                            data-visual-trigger
+                            data-type="image"
+                            data-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1600&q=80"
+                            data-alt="Screenshot of autonomous pipelines dashboard"
+                            data-title="Autonomous Cloud Pipelines"
+                            data-summary="Self-healing deployment mesh with golden signals surfaced for every release train."
+                            aria-label="Open gallery for Autonomous Cloud Pipelines"
+                        >
+                            <img
+                                src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=900&q=80"
+                                alt="Visualization of cloud pipelines and monitoring widgets"
+                                loading="lazy"
+                            />
+                        </button>
+                        <div class="visual-overlay">
+                            <p>Pipeline guardrails and drift detection.</p>
+                        </div>
+                    </div>
+                    <div class="visual-content">
+                        <p class="visual-eyebrow">Platform Engineering</p>
+                        <h3>Autonomous Cloud Pipelines</h3>
+                        <p>Policy-aware deployment mesh rolling updates across hybrid clusters.</p>
+                        <ul class="tech-list">
+                            <li>Kubernetes</li>
+                            <li>GitHub Actions</li>
+                            <li>Grafana</li>
+                        </ul>
+                        <div class="visual-actions">
+                            <a class="visual-btn solid" href="https://autonomous-pipelines.dev" target="_blank" rel="noreferrer">Live Demo</a>
+                            <a class="visual-btn outline" href="https://github.com/Hashim9184/autonomous-pipelines" target="_blank" rel="noreferrer">GitHub Repo</a>
+                        </div>
+                    </div>
+                </article>
             </div>
         </section>
 
