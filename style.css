@@ -718,14 +718,14 @@ body.theme-light .theme-toggle__icon {
 
 .visual-actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.85rem;
+    flex-direction: column;
+    gap: 0.75rem;
     margin-top: auto;
+    width: 100%;
 }
 
 .visual-btn {
-    flex: 1 1 140px;
-    min-width: 140px;
+    width: 100%;
     padding: 0.75rem 1.25rem;
     border-radius: var(--radius-lg);
     border: 1px solid transparent;
@@ -1044,10 +1044,6 @@ body.lightbox-open {
 
     .hero__cards {
         gap: 0.85rem;
-    }
-
-    .visual-actions {
-        flex-direction: column;
     }
 
     .visuals-carousel {
