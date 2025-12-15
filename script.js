@@ -110,6 +110,88 @@ ready(() => {
         yearEl.textContent = new Date().getFullYear();
     }
 
+    // Compact horizontal carousel for Project Visuals.
+    const visualCarousels = document.querySelectorAll('[data-visuals-carousel]');
+    if (visualCarousels.length > 0) {
+        visualCarousels.forEach((carousel) => {
+            const track = carousel.querySelector('[data-visuals-track]');
+            const slides = Array.from(carousel.querySelectorAll('[data-visual-slide]'));
+            const prevBtn = carousel.querySelector('[data-carousel-prev]');
+            const nextBtn = carousel.querySelector('[data-carousel-next]');
+
+            if (!track || slides.length === 0) {
+                return;
+            }
+
+            let currentIndex = 0;
+            let rafId = null;
+
+            const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+            const scrollToSlide = (index, smooth = true) => {
+                const normalized = (index + slides.length) % slides.length;
+                const slide = slides[normalized];
+                const viewportWidth = track.clientWidth;
+                const slideWidth = slide.clientWidth;
+                const target = slide.offsetLeft - 16;
+                const maxScroll = track.scrollWidth - viewportWidth;
+                const clamped = clamp(target, 0, Math.max(0, maxScroll));
+
+                track.scrollTo({
+                    left: clamped,
+                    behavior: smooth ? 'smooth' : 'auto',
+                });
+
+                currentIndex = normalized;
+            };
+
+            const handlePrev = () => scrollToSlide(currentIndex - 1);
+            const handleNext = () => scrollToSlide(currentIndex + 1);
+
+            prevBtn?.addEventListener('click', handlePrev);
+            nextBtn?.addEventListener('click', handleNext);
+
+            const syncIndexFromScroll = () => {
+                const viewportCenter = track.scrollLeft + track.clientWidth / 2;
+                let closestIndex = currentIndex;
+                let smallestDelta = Number.POSITIVE_INFINITY;
+
+                slides.forEach((slide, idx) => {
+                    const slideCenter = slide.offsetLeft + slide.clientWidth / 2;
+                    const delta = Math.abs(slideCenter - viewportCenter);
+                    if (delta < smallestDelta) {
+                        smallestDelta = delta;
+                        closestIndex = idx;
+                    }
+                });
+
+                currentIndex = closestIndex;
+            };
+
+            track.addEventListener('scroll', () => {
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                }
+                rafId = requestAnimationFrame(syncIndexFromScroll);
+            });
+
+            carousel.addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowLeft') {
+                    event.preventDefault();
+                    handlePrev();
+                } else if (event.key === 'ArrowRight') {
+                    event.preventDefault();
+                    handleNext();
+                }
+            });
+
+            const handleResize = () => scrollToSlide(currentIndex, false);
+            window.addEventListener('resize', handleResize);
+
+            scrollToSlide(0, false);
+        });
+    }
+
     // Modal/lightbox for Project Visuals cards with focus and keyboard support.
     const lightbox = document.querySelector('[data-lightbox]');
     const visualTriggers = document.querySelectorAll('[data-visual-trigger]');
