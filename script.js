@@ -109,4 +109,151 @@ ready(() => {
     if (yearEl) {
         yearEl.textContent = new Date().getFullYear();
     }
+
+    // Modal/lightbox for Project Visuals cards with focus and keyboard support.
+    const lightbox = document.querySelector('[data-lightbox]');
+    const visualTriggers = document.querySelectorAll('[data-visual-trigger]');
+
+    if (lightbox && visualTriggers.length > 0) {
+        const lightboxMedia = lightbox.querySelector('[data-lightbox-media]');
+        const lightboxTitle = lightbox.querySelector('[data-lightbox-title]');
+        const lightboxDesc = lightbox.querySelector('[data-lightbox-desc]');
+        const closeBtn = lightbox.querySelector('[data-lightbox-close]');
+        const dismissTarget = lightbox.querySelector('[data-lightbox-dismiss]');
+        let lastFocusedElement = null;
+
+        const decodeSource = (src) => {
+            try {
+                return decodeURIComponent(src);
+            } catch (error) {
+                return src;
+            }
+        };
+
+        const buildMediaNode = (type, src, altText) => {
+            if (type === 'video') {
+                const video = document.createElement('video');
+                video.src = src;
+                video.controls = true;
+                video.autoplay = true;
+                video.muted = true;
+                video.loop = true;
+                video.playsInline = true;
+                video.setAttribute('aria-label', altText || 'Project video preview');
+                return video;
+            }
+            const image = document.createElement('img');
+            image.src = src;
+            image.alt = altText || 'Project visual preview';
+            image.loading = 'lazy';
+            return image;
+        };
+
+        const openLightbox = (trigger) => {
+            if (!lightboxMedia) {
+                return;
+            }
+
+            const { type = 'image', src = '', title = '', summary = '', alt = '' } = trigger.dataset;
+            const resolvedSrc = decodeSource(src);
+            if (!resolvedSrc) {
+                return;
+            }
+
+            lightboxMedia.innerHTML = '';
+            const fallbackAlt =
+                alt ||
+                trigger.getAttribute('aria-label') ||
+                trigger.querySelector('img')?.getAttribute('alt') ||
+                '';
+            const mediaNode = buildMediaNode(type, resolvedSrc, fallbackAlt);
+            lightboxMedia.appendChild(mediaNode);
+
+            if (lightboxTitle) {
+                lightboxTitle.textContent = title || 'Project preview';
+            }
+
+            if (lightboxDesc) {
+                lightboxDesc.textContent = summary || fallbackAlt || '';
+            }
+
+            lightbox.hidden = false;
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('lightbox-open');
+            lastFocusedElement = trigger;
+
+            requestAnimationFrame(() => {
+                closeBtn?.focus();
+            });
+        };
+
+        const closeLightbox = () => {
+            if (lightbox.hidden) {
+                return;
+            }
+
+            lightbox.hidden = true;
+            lightbox.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('lightbox-open');
+            lightboxMedia.innerHTML = '';
+
+            if (lastFocusedElement) {
+                lastFocusedElement.focus();
+                lastFocusedElement = null;
+            }
+        };
+
+        visualTriggers.forEach((trigger) => {
+            trigger.addEventListener('click', () => openLightbox(trigger));
+        });
+
+        closeBtn?.addEventListener('click', closeLightbox);
+        dismissTarget?.addEventListener('click', closeLightbox);
+
+        lightbox.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeLightbox();
+                return;
+            }
+
+            if (event.key === 'Tab') {
+                const focusableSelectors = [
+                    'button:not([disabled])',
+                    '[href]',
+                    'input:not([disabled])',
+                    'select:not([disabled])',
+                    'textarea:not([disabled])',
+                    '[tabindex]:not([tabindex="-1"])',
+                ];
+                const focusables = Array.from(
+                    lightbox.querySelectorAll(focusableSelectors.join(','))
+                );
+
+                if (focusables.length === 0) {
+                    event.preventDefault();
+                    return;
+                }
+
+                const first = focusables[0];
+                const last = focusables[focusables.length - 1];
+                const isShift = event.shiftKey;
+                const active = document.activeElement;
+
+                if (isShift && active === first) {
+                    last.focus();
+                    event.preventDefault();
+                } else if (!isShift && active === last) {
+                    first.focus();
+                    event.preventDefault();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !lightbox.hidden) {
+                closeLightbox();
+            }
+        });
+    }
 });
