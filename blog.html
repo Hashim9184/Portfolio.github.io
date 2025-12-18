@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Insights &amp; Engineering Notes</title>
+    <meta
+        name="description"
+        content="Hashim Shaikh shares AI, Cloud, DevOps, and infrastructure lessons learned across production engagements."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" href="blog.css" />
+</head>
+<body>
+    <div class="page-shell" data-page>
+        <header class="blog-hero">
+            <div>
+                <p class="eyebrow">Insights</p>
+                <h1>Insights &amp; Engineering Notes</h1>
+                <p class="lead">
+                    Thoughts on AI infrastructure, cloud automation, and DevOps patterns that balance velocity with reliability. Real-world
+                    problem solving, not theory.
+                </p>
+            </div>
+            <div class="filters" role="tablist" aria-label="Filter blog posts">
+                <button class="filter-btn is-active" data-filter="all" role="tab">All</button>
+                <button class="filter-btn" data-filter="ai" role="tab">AI</button>
+                <button class="filter-btn" data-filter="cloud" role="tab">Cloud</button>
+                <button class="filter-btn" data-filter="devops" role="tab">DevOps</button>
+                <button class="filter-btn" data-filter="case-study" role="tab">Case Studies</button>
+            </div>
+            <button class="ghost-btn" type="button" data-open-composer>Quick Draft</button>
+        </header>
+
+        <main>
+            <section class="blog-grid" data-blog-grid></section>
+
+            <section class="blog-cta">
+                <p>Need a thought partner for your next AI or cloud initiative?</p>
+                <a class="primary-btn" href="mailto:hashimshaikh.dev@gmail.com">Let's collaborate</a>
+            </section>
+        </main>
+    </div>
+
+    <div class="composer" data-composer hidden>
+        <div class="composer__backdrop" data-close-composer></div>
+        <form class="composer__dialog" data-composer-form>
+            <header>
+                <h2>Quick Draft</h2>
+                <p>Generate a post card instantly. You can link to an existing article or use the template.</p>
+            </header>
+            <label>
+                Title
+                <input type="text" name="title" required />
+            </label>
+            <label>
+                Summary
+                <textarea name="summary" rows="3" required></textarea>
+            </label>
+            <label>
+                Cover image URL
+                <input type="url" name="cover" placeholder="https://..." required />
+            </label>
+            <label>
+                Tags (comma separated)
+                <input type="text" name="tags" placeholder="AI, Azure, DevOps" />
+            </label>
+            <label>
+                Category
+                <select name="category">
+                    <option value="ai">AI</option>
+                    <option value="cloud">Cloud</option>
+                    <option value="devops">DevOps</option>
+                    <option value="case-study">Case Study</option>
+                </select>
+            </label>
+            <label>
+                Reading time
+                <input type="text" name="readingTime" placeholder="5 min read" required />
+            </label>
+            <label>
+                Publish date
+                <input type="text" name="date" placeholder="Jan 2025" required />
+            </label>
+            <label>
+                Article link
+                <input type="url" name="link" placeholder="blog-post.html" />
+            </label>
+            <div class="composer__actions">
+                <button type="button" class="ghost-btn" data-close-composer>Cancel</button>
+                <button type="submit" class="primary-btn">Add Post</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="blog.js"></script>
+</body>
+</html>

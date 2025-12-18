@@ -534,6 +534,59 @@ body.theme-light .theme-toggle__icon {
     color: var(--muted);
 }
 
+.testimonials {
+    margin-bottom: 5rem;
+}
+
+.testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+
+.testimonial-card {
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--card-border);
+    background: var(--surface-panel);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: var(--shadow-soft);
+}
+
+.testimonial-quote {
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.testimonial-author img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(140, 146, 255, 0.5);
+}
+
+.testimonial-author strong {
+    display: block;
+    color: var(--text);
+}
+
+.testimonial-author span {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
 .project-case {
     display: flex;
     flex-direction: column;

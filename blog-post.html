@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>When Latency Is Your Product</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" href="blog.css" />
+</head>
+<body class="post-body">
+    <div class="post-shell" data-page data-post-id="latency-case-study">
+        <header class="post-hero">
+            <div>
+                <p class="eyebrow">AI • Case Study</p>
+                <h1 data-field="title">When Latency Is Your Product</h1>
+                <p class="lead" data-field="excerpt">
+                    Architecting a global inference mesh so every AI copilot interaction stays sub-120ms while traffic grows 10x.
+                </p>
+                <div class="post-meta">
+                    <span data-field="readingTime">Reading time: 6 min</span>
+                    <span data-field="date">Published: Sep 2024</span>
+                </div>
+                <ul class="tag-list" data-field="tags">
+                    <li>AI</li>
+                    <li>Latency</li>
+                    <li>Azure</li>
+                </ul>
+                <div class="post-actions">
+                    <button class="ghost-btn" type="button" data-open-post-editor>Edit Content</button>
+                    <button class="ghost-btn" type="button" data-open-block-editor>Add Block</button>
+                </div>
+            </div>
+            <aside class="toc" aria-label="Table of contents">
+                <p>Table of Contents</p>
+                <div data-toc></div>
+            </aside>
+        </header>
+
+        <article class="post-content" data-article>
+            <section data-field="problem">
+                <h2>Problem Statement</h2>
+                <p>
+                    Conversational copilots were rolling out to 70k enterprise users, but inference ran in a single region. During peak hours,
+                    round trips exceeded 260ms and sentiment tools flagged degraded experience. We needed global low-latency while keeping
+                    PII confined to geographic zones.
+                </p>
+            </section>
+
+            <section>
+                <h2>Constraints</h2>
+                <ul data-field="constraints">
+                    <li>Regulated industries required data residency across EU, APAC, and NA.</li>
+                    <li>Cost ceiling: +18% over existing deployment.</li>
+                    <li>Legacy WebSocket clients could not be rewritten.</li>
+                </ul>
+            </section>
+
+            <section data-field="architecture">
+                <h2>Architecture / Approach</h2>
+                <p>
+                    We built an inference mesh using Azure Front Door, regional AKS clusters, and a warm-worker strategy so GPUs stay spun up
+                    without idle burn. Requests hit the closest POP, then route to the least-loaded region that satisfies residency tags.
+                </p>
+                <div class="code-cell">
+                    <div class="code-header">
+                        <span></span><span></span><span></span>
+                        <p>inference-mesh.json</p>
+                    </div>
+                    <pre><code class="language-json" data-field="code">{
+  "ingress": "azure-front-door",
+  "routing": [
+    {"region": "westeurope", "tags": ["eu", "finance"]},
+    {"region": "eastus", "tags": ["na"]},
+    {"region": "southeastasia", "tags": ["apac"]}
+  ],
+  "telemetry": "opentelemetry + grafana loki"
+}</code></pre>
+                </div>
+            </section>
+
+            <section data-field="decisions">
+                <h2>Key Decisions</h2>
+                <ol>
+                    <li>Adopted Redis for session affinity so user context stays pinned to the fastest region.</li>
+                    <li>Used async health pings to scale down GPU pools safely.</li>
+                    <li>Injected feature flags via OpenFeature to ship routing changes in minutes.</li>
+                </ol>
+            </section>
+
+            <section data-field="lessons">
+                <h2>Lessons Learned</h2>
+                <p>
+                    Latency SLAs are social contracts. Instrumentation plus clear dashboards kept execs aligned with engineering reality. The
+                    biggest unlock was co-designing reviews with product so they understood tradeoffs.
+                </p>
+            </section>
+
+            <section data-field="outcome">
+                <h2>Final Outcome</h2>
+                <p>
+                    Median latency dropped to 96ms globally and cost only rose 12%. More importantly, customer success reported a 25% increase in
+                    copilot adoption because the experience felt instant.
+                </p>
+            </section>
+        </article>
+
+        <section class="dynamic-blocks">
+            <div class="section-heading">
+                <p class="eyebrow">Notebook Style Notes</p>
+                <h2>Additional Context &amp; Code</h2>
+            </div>
+            <div data-dynamic-blocks class="dynamic-blocks__grid"></div>
+        </section>
+
+        <section class="post-cta">
+            <p>Need something similar? Let's work together.</p>
+            <a class="primary-btn" href="mailto:hashimshaikh.dev@gmail.com">Contact Hashim</a>
+        </section>
+    </div>
+
+    <div class="composer" data-post-editor hidden>
+        <div class="composer__backdrop" data-close-post-editor></div>
+        <form class="composer__dialog" data-post-editor-form>
+            <header>
+                <h2>Edit Content</h2>
+                <p>Update sections inline. Changes stay in your browser via local drafts.</p>
+            </header>
+            <label>
+                Title
+                <input type="text" name="title" required />
+            </label>
+            <label>
+                Abstract
+                <textarea name="excerpt" rows="2" required></textarea>
+            </label>
+            <label>
+                Reading time
+                <input type="text" name="readingTime" required />
+            </label>
+            <label>
+                Publish date
+                <input type="text" name="date" required />
+            </label>
+            <label>
+                Tags (comma separated)
+                <input type="text" name="tags" />
+            </label>
+            <label>
+                Problem statement
+                <textarea name="problem" rows="3" required></textarea>
+            </label>
+            <label>
+                Constraints (one per line)
+                <textarea name="constraints" rows="3"></textarea>
+            </label>
+            <label>
+                Architecture description
+                <textarea name="architecture" rows="3"></textarea>
+            </label>
+            <label>
+                Architecture code block
+                <textarea name="code" rows="4"></textarea>
+            </label>
+            <label>
+                Key decisions (one per line)
+                <textarea name="decisions" rows="3"></textarea>
+            </label>
+            <label>
+                Lessons learned
+                <textarea name="lessons" rows="3"></textarea>
+            </label>
+            <label>
+                Final outcome
+                <textarea name="outcome" rows="3"></textarea>
+            </label>
+            <div class="composer__actions">
+                <button type="button" class="ghost-btn" data-close-post-editor>Cancel</button>
+                <button type="submit" class="primary-btn">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="composer" data-block-editor hidden>
+        <div class="composer__backdrop" data-close-block-editor></div>
+        <form class="composer__dialog" data-block-editor-form>
+            <header>
+                <h2>Add Notebook Block</h2>
+                <p>Capture extra context, code, or decisions inline.</p>
+            </header>
+            <label>
+                Block title
+                <input type="text" name="blockTitle" placeholder="Optional heading" />
+            </label>
+            <label>
+                Block type
+                <select name="blockType">
+                    <option value="text">Text</option>
+                    <option value="code">Code</option>
+                </select>
+            </label>
+            <label>
+                Content
+                <textarea name="blockContent" rows="4" required></textarea>
+            </label>
+            <div class="composer__actions">
+                <button type="button" class="ghost-btn" data-close-block-editor>Cancel</button>
+                <button type="submit" class="primary-btn">Save Block</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="blog.js"></script>
+</body>
+</html>
