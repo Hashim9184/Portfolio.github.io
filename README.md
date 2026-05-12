@@ -22,11 +22,12 @@ This portfolio serves as a dynamic representation of my work, including:
 📂 Installation & Usage
 Clone the repository:
 
-bash
-Copy
-Edit
-git clone https://hashim9184.github.io/Portfolio.github.io/
-Open index.html in a browser.
+```bash
+git clone https://github.com/Hashim9184/Portfolio.github.io.git
+cd Portfolio.github.io
+```
+
+Then simply open `index.html` or `blog.html` in your browser, or serve the folder locally (for example with `npx serve`) to test animations that rely on local assets.
 
 📢 Feedback & Contributions
 Feel free to open an issue or pull request if you have suggestions for improvement! 🚀

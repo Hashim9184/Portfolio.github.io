@@ -7,10 +7,102 @@ const ready = (cb) => {
 };
 
 ready(() => {
+    const SUMMARY_COLLAPSED_HEIGHT = 220;
+    const TAGS_COLLAPSED_HEIGHT = 96;
+    const FOCUSABLE_SELECTORS = [
+        'button:not([disabled])',
+        '[href]',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+    ].join(',');
+
+    let openModalCount = 0;
+    const createModalController = (modal, { focusSelector } = {}) => {
+        if (!modal) return null;
+        let previousFocus = null;
+
+        const getFocusable = () =>
+            Array.from(modal.querySelectorAll(FOCUSABLE_SELECTORS)).filter(
+                (el) => !el.hasAttribute('disabled') && el.offsetParent !== null
+            );
+
+        const handleKeydown = (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                controller.close();
+                return;
+            }
+
+            if (event.key !== 'Tab') {
+                return;
+            }
+
+            const focusables = getFocusable();
+            if (focusables.length === 0) {
+                event.preventDefault();
+                return;
+            }
+
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            const active = document.activeElement;
+
+            if (event.shiftKey && active === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && active === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        const controller = {
+            open() {
+                if (!modal.hidden && modal.getAttribute('aria-hidden') === 'false') {
+                    return;
+                }
+                previousFocus = document.activeElement;
+                modal.hidden = false;
+                modal.setAttribute('aria-hidden', 'false');
+                openModalCount += 1;
+                document.body.classList.add('modal-open');
+                modal.addEventListener('keydown', handleKeydown);
+
+                requestAnimationFrame(() => {
+                    const focusTarget = (focusSelector && modal.querySelector(focusSelector)) || getFocusable()[0];
+                    focusTarget?.focus();
+                });
+            },
+            close() {
+                if (modal.hidden) {
+                    return;
+                }
+
+                modal.hidden = true;
+                modal.setAttribute('aria-hidden', 'true');
+                modal.removeEventListener('keydown', handleKeydown);
+                openModalCount = Math.max(0, openModalCount - 1);
+                if (openModalCount === 0) {
+                    document.body.classList.remove('modal-open');
+                }
+
+                if (previousFocus && typeof previousFocus.focus === 'function') {
+                    previousFocus.focus();
+                }
+                previousFocus = null;
+            },
+        };
+
+        return controller;
+    };
+
     const STORAGE_KEY = 'hashim-blog-drafts';
     const grid = document.querySelector('[data-blog-grid]');
     const filters = document.querySelectorAll('[data-filter]');
     const composer = document.querySelector('[data-composer]');
+    const composerModal = createModalController(composer, { focusSelector: 'input[name="title"]' });
     const openComposer = document.querySelector('[data-open-composer]');
     const closeComposer = document.querySelectorAll('[data-close-composer]');
     const composerForm = document.querySelector('[data-composer-form]');
@@ -89,11 +181,81 @@ ready(() => {
     };
 
     let drafts = readDrafts();
+    let editingId = null;
 
     const getAllPosts = () => [
         ...drafts.map((draft) => ({ ...draft, __source: 'draft' })),
         ...defaultPosts.map((post) => ({ ...post, __source: 'default' })),
     ];
+
+    const hydrateCardOverflow = (details) => {
+        if (!details) return;
+        const summaryWrapper = details.querySelector('[data-card-summary]');
+        const tagsWrapper = details.querySelector('[data-card-tags]');
+        const toggle = details.querySelector('[data-card-toggle]');
+        if (!summaryWrapper || !toggle) return;
+
+        const summaryNeedsClamp = summaryWrapper.scrollHeight > SUMMARY_COLLAPSED_HEIGHT + 12;
+        const tagsNeedsClamp = tagsWrapper ? tagsWrapper.scrollWidth > tagsWrapper.clientWidth + 16 : false;
+        const requiresToggle = summaryNeedsClamp || tagsNeedsClamp;
+
+        if (!summaryNeedsClamp) {
+            summaryWrapper.classList.add('is-expanded');
+            summaryWrapper.classList.remove('is-collapsed');
+        } else {
+            summaryWrapper.style.setProperty('--summary-max', `${SUMMARY_COLLAPSED_HEIGHT}px`);
+            summaryWrapper.classList.add('is-collapsed');
+            summaryWrapper.classList.remove('is-expanded');
+        }
+
+        if (tagsWrapper) {
+            if (tagsNeedsClamp) {
+                tagsWrapper.classList.add('is-scrollable');
+            } else {
+                tagsWrapper.classList.remove('is-scrollable');
+            }
+        }
+
+        if (!requiresToggle) {
+            toggle.hidden = true;
+            toggle.setAttribute('aria-hidden', 'true');
+            toggle.setAttribute('aria-expanded', 'true');
+            return;
+        }
+
+        toggle.hidden = false;
+        toggle.setAttribute('aria-hidden', 'false');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.textContent = 'Read more';
+
+        const handleToggle = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const expanded = toggle.getAttribute('aria-expanded') === 'true';
+            const nextState = !expanded;
+            toggle.setAttribute('aria-expanded', String(nextState));
+            toggle.textContent = nextState ? 'Show less' : 'Read more';
+
+            if (summaryNeedsClamp) {
+                summaryWrapper.classList.toggle('is-expanded', nextState);
+                summaryWrapper.classList.toggle('is-collapsed', !nextState);
+            }
+
+            if (tagsWrapper && tagsNeedsClamp) {
+                tagsWrapper.scrollTo({
+                    left: nextState ? tagsWrapper.scrollWidth : 0,
+                    behavior: 'smooth',
+                });
+            }
+        };
+
+        toggle.addEventListener('click', handleToggle);
+        toggle.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                handleToggle(event);
+            }
+        });
+    };
 
     const renderPosts = () => {
         if (!grid) return;
@@ -123,12 +285,21 @@ ready(() => {
                             <span>${post.date}</span>
                         </div>
                         <h2>${post.title}</h2>
-                        <p>${post.summary}</p>
-                        <ul class="tag-list">
-                            ${(post.tags || [])
-                                .map((tag) => `<li>${tag.trim()}</li>`)
-                                .join('')}
-                        </ul>
+                        <div class="card-details" data-card-details>
+                            <div class="card-summary-wrapper" data-card-summary>
+                                <p class="card-summary">${post.summary}</p>
+                            </div>
+                            <div class="card-tags-wrapper" data-card-tags>
+                                <ul class="tag-list">
+                                    ${(post.tags || [])
+                                        .map((tag) => `<li>${tag.trim()}</li>`)
+                                        .join('')}
+                                </ul>
+                            </div>
+                            <button type="button" class="card-toggle" data-card-toggle aria-expanded="false">
+                                Read more
+                            </button>
+                        </div>
                     </div>
                 </a>
             `;
@@ -139,16 +310,36 @@ ready(() => {
             });
 
             if (post.__source === 'draft' && post.id) {
+                const controls = document.createElement('div');
+                controls.className = 'card-controls';
+
                 const editBtn = document.createElement('button');
                 editBtn.type = 'button';
-                editBtn.className = 'edit-btn';
+                editBtn.className = 'card-controls__btn';
                 editBtn.textContent = 'Edit';
                 editBtn.addEventListener('click', (event) => {
                     event.stopPropagation();
                     event.preventDefault();
                     startEdit(post.id);
                 });
-                article.appendChild(editBtn);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.className = 'card-controls__btn card-controls__btn--danger';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    const confirmed =
+                        window.confirm?.('Delete this draft? This action cannot be undone.') ?? true;
+                    if (confirmed) {
+                        deleteDraft(post.id);
+                    }
+                });
+
+                controls.appendChild(editBtn);
+                controls.appendChild(deleteBtn);
+                article.appendChild(controls);
             }
             fragment.appendChild(article);
         });
@@ -160,6 +351,10 @@ ready(() => {
             grid.appendChild(empty);
         } else {
             grid.appendChild(fragment);
+            requestAnimationFrame(() => {
+                const detailsNodes = grid.querySelectorAll('[data-card-details]');
+                detailsNodes.forEach((node) => hydrateCardOverflow(node));
+            });
         }
     };
 
@@ -178,11 +373,11 @@ ready(() => {
 
     const toggleComposer = (show, options = {}) => {
         const { skipReset = false } = options;
-        if (!composer) return;
-        composer.hidden = !show;
+        if (!composerModal) return;
         if (show) {
-            composer.querySelector('input[name="title"]')?.focus();
+            composerModal.open();
         } else {
+            composerModal.close();
             if (!skipReset) {
                 composerForm?.reset();
             }
@@ -203,6 +398,12 @@ ready(() => {
         composerForm.readingTime.value = draft.readingTime;
         composerForm.date.value = draft.date;
         composerForm.link.value = draft.link || 'blog-post.html';
+    };
+
+    const deleteDraft = (id) => {
+        drafts = drafts.filter((draft) => draft.id !== id);
+        saveDrafts(drafts);
+        renderPosts();
     };
 
     openComposer?.addEventListener('click', () => toggleComposer(true));
@@ -258,7 +459,8 @@ ready(() => {
     if (postShell) {
         const postId = postShell.dataset.postId || 'post';
         const POST_STORAGE_KEY = `hashim-post-${postId}`;
-        const editorModal = document.querySelector('[data-post-editor]');
+        const editorModalEl = document.querySelector('[data-post-editor]');
+        const editorModal = createModalController(editorModalEl, { focusSelector: 'input[name="title"]' });
         const openEditorBtn = document.querySelector('[data-open-post-editor]');
         const closeEditorBtns = document.querySelectorAll('[data-close-post-editor]');
         const editorForm = document.querySelector('[data-post-editor-form]');
@@ -353,7 +555,6 @@ ready(() => {
 
         const toggleEditor = (show) => {
             if (!editorModal) return;
-            editorModal.hidden = !show;
             if (show) {
                 const current = readCurrentData();
                 if (editorForm) {
@@ -370,7 +571,9 @@ ready(() => {
                     editorForm.lessons.value = current.lessons;
                     editorForm.outcome.value = current.outcome;
                 }
-                editorForm?.querySelector('input[name="title"]')?.focus();
+                editorModal.open();
+            } else {
+                editorModal.close();
             }
         };
 
@@ -409,7 +612,8 @@ ready(() => {
         });
 
         const blocksContainer = document.querySelector('[data-dynamic-blocks]');
-        const blockModal = document.querySelector('[data-block-editor]');
+        const blockModalEl = document.querySelector('[data-block-editor]');
+        const blockModal = createModalController(blockModalEl, { focusSelector: 'input[name="blockTitle"]' });
         const blockForm = document.querySelector('[data-block-editor-form]');
         const openBlockBtn = document.querySelector('[data-open-block-editor]');
         const closeBlockBtns = document.querySelectorAll('[data-close-block-editor]');
@@ -474,10 +678,14 @@ ready(() => {
 
         const toggleBlockEditor = (show, options = {}) => {
             if (!blockModal) return;
-            blockModal.hidden = !show;
-            if (!show && !options.skipReset) {
-                blockForm?.reset();
-                editingBlockId = null;
+            if (show) {
+                blockModal.open();
+            } else {
+                blockModal.close();
+                if (!options.skipReset) {
+                    blockForm?.reset();
+                    editingBlockId = null;
+                }
             }
         };
 

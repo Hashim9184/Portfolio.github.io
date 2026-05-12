@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notebook Blog Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/prismjs@1.29.0/themes/prism-tomorrow.css" />
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #0b0c10;
+            --surface: #12131a;
+            --surface-light: #1c1f2b;
+            --text: #f8f8fb;
+            --muted: #9da3b4;
+            --accent: #8c92ff;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .editor-shell {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 5rem;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            margin: 0;
+        }
+
+        header p {
+            margin: 0;
+            color: var(--muted);
+            max-width: 520px;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font: inherit;
+            border: none;
+            cursor: pointer;
+        }
+
+        .primary-btn {
+            background: var(--accent);
+            color: var(--bg);
+            padding: 0.7rem 1.5rem;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .ghost-btn {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--card-border);
+            border-radius: 999px;
+            padding: 0.7rem 1.4rem;
+        }
+
+        .block-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .block-shell {
+            background: var(--surface);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            position: relative;
+            transition: transform 0.3s ease, border 0.3s ease;
+            outline: none;
+        }
+
+        .block-shell:focus-within {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .block-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .block-type {
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .block-toolbar button {
+            background: var(--surface-light);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 0.35rem 0.9rem;
+            font-size: 0.8rem;
+            border: 1px solid transparent;
+        }
+
+        .block-toolbar button:hover {
+            border-color: var(--accent);
+        }
+
+        textarea,
+        .code-preview {
+            width: 100%;
+            border: none;
+            border-radius: calc(var(--radius) - 6px);
+            background: var(--surface-light);
+            color: var(--text);
+            font: inherit;
+            padding: 1rem;
+            min-height: 160px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        textarea {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .code-preview {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .block-controls {
+            margin-top: 0.75rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .block-controls button {
+            flex: none;
+            background: transparent;
+            border: 1px solid var(--card-border);
+            border-radius: 999px;
+            padding: 0.3rem 0.9rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .block-controls button:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .type-switcher {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--surface-light);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .type-switcher button {
+            border-radius: 999px;
+            padding: 0.3rem 0.8rem;
+        }
+
+        .type-switcher button.active {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .command-hint {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .published-view {
+            background: #f7f7fa;
+            color: #12121a;
+            padding: clamp(2rem, 6vw, 3.5rem);
+            border-radius: 32px;
+            line-height: 1.7;
+        }
+
+        .published-view h1,
+        .published-view h2,
+        .published-view h3 {
+            color: #050505;
+        }
+
+        .published-view pre {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 1rem;
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+
+        .published-view code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @media (max-width: 640px) {
+            .block-controls {
+                flex-wrap: wrap;
+            }
+
+            .block-controls button {
+                flex: 1 1 45%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/prism.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-javascript.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-python.js"></script>
+    <script type="text/babel">
+        const { useState, useMemo, useEffect } = React;
+
+        const generateId = () => `block-${crypto.randomUUID()}`;
+
+        const initialBlocks = [
+            {
+                id: generateId(),
+                type: 'text',
+                content: '# New blog article\n\nUse this notebook to plan your thoughts first.',
+            },
+            {
+                id: generateId(),
+                type: 'code',
+                content: "def greet(name):\n    return f\"Hello {name}!\"",
+            },
+        ];
+
+        const BlockShell = ({
+            block,
+            index,
+            onChange,
+            onAddBelow,
+            onDelete,
+            onMove,
+            onToggleTypeMenu,
+            activeTypeMenu,
+            onTypeChange,
+        }) => {
+            const [isCommandMode, setCommandMode] = useState(false);
+
+            const handleShellFocus = (event) => {
+                if (event.target === event.currentTarget) {
+                    setCommandMode(true);
+                }
+            };
+
+            const handleShellBlur = (event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) {
+                    setCommandMode(false);
+                }
+            };
+
+            const handleCommands = (event) => {
+                if (event.target !== event.currentTarget) return;
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    onAddBelow(index);
+                }
+                if (event.key === '/') {
+                    event.preventDefault();
+                    onToggleTypeMenu(block.id);
+                }
+            };
+
+            return (
+                <article
+                    className="block-shell"
+                    tabIndex={0}
+                    onFocus={handleShellFocus}
+                    onBlur={handleShellBlur}
+                    onKeyDown={handleCommands}
+                >
+                    <div className="block-toolbar">
+                        <span className="block-type">{block.type === 'text' ? 'Text' : 'Code'} Block</span>
+                        <button onClick={() => onToggleTypeMenu(block.id)}>Switch (/)</button>
+                        <button onClick={() => onAddBelow(index)}>New (Enter)</button>
+                    </div>
+
+                    {block.type === 'text' ? (
+                        <textarea
+                            value={block.content}
+                            onChange={(event) => onChange(block.id, event.target.value)}
+                            placeholder="Write in Markdown..."
+                        />
+                    ) : (
+                        <textarea
+                            className="code-preview"
+                            value={block.content}
+                            onChange={(event) => onChange(block.id, event.target.value)}
+                            placeholder="Write code..."
+                        />
+                    )}
+
+                    <div className="block-controls">
+                        <button onClick={() => onMove(block.id, -1)}>Move Up</button>
+                        <button onClick={() => onMove(block.id, 1)}>Move Down</button>
+                        <button onClick={() => onDelete(block.id)}>Delete</button>
+                        <button onClick={() => onToggleTypeMenu(block.id)}>
+                            {block.type === 'text' ? 'Make Code' : 'Make Text'}
+                        </button>
+                    </div>
+
+                    <p className="command-hint">
+                        Focus this block and press <strong>Enter</strong> for a new block, or <strong>/</strong> to change type.
+                    </p>
+
+                    {activeTypeMenu === block.id && (
+                        <div className="type-switcher">
+                            <button
+                                className={block.type === 'text' ? 'active' : ''}
+                                onClick={() => onTypeChange(block.id, 'text')}
+                            >
+                                Text Block
+                            </button>
+                            <button
+                                className={block.type === 'code' ? 'active' : ''}
+                                onClick={() => onTypeChange(block.id, 'code')}
+                            >
+                                Code Block
+                            </button>
+                        </div>
+                    )}
+                </article>
+            );
+        };
+
+        const PublishedArticle = ({ blocks }) => {
+            useEffect(() => {
+                Prism.highlightAll();
+            }, []);
+
+            return (
+                <div className="published-view">
+                    {blocks.map((block) =>
+                        block.type === 'text' ? (
+                            <div
+                                key={block.id}
+                                dangerouslySetInnerHTML={{ __html: marked.parse(block.content || '') }}
+                            />
+                        ) : (
+                            <pre key={block.id}>
+                                <code className="language-javascript">{block.content}</code>
+                            </pre>
+                        )
+                    )}
+                </div>
+            );
+        };
+
+        const NotebookApp = () => {
+            const [blocks, setBlocks] = useState(initialBlocks);
+            const [activeTypeMenu, setActiveTypeMenu] = useState(null);
+            const [isPublished, setPublished] = useState(false);
+
+            const updateBlock = (id, content) => {
+                setBlocks((prev) => prev.map((block) => (block.id === id ? { ...block, content } : block)));
+            };
+
+            const addBlockBelow = (index) => {
+                const newBlock = { id: generateId(), type: 'text', content: '' };
+                setBlocks((prev) => {
+                    const next = [...prev];
+                    next.splice(index + 1, 0, newBlock);
+                    return next;
+                });
+            };
+
+            const deleteBlock = (id) => {
+                setBlocks((prev) => prev.filter((block) => block.id !== id));
+            };
+
+            const moveBlock = (id, direction) => {
+                setBlocks((prev) => {
+                    const index = prev.findIndex((block) => block.id === id);
+                    if (index < 0) return prev;
+                    const target = index + direction;
+                    if (target < 0 || target >= prev.length) return prev;
+                    const next = [...prev];
+                    const [removed] = next.splice(index, 1);
+                    next.splice(target, 0, removed);
+                    return next;
+                });
+            };
+
+            const changeType = (id, nextType) => {
+                setBlocks((prev) => prev.map((block) => (block.id === id ? { ...block, type: nextType } : block)));
+                setActiveTypeMenu(null);
+            };
+
+            const handlePublish = () => {
+                setPublished(true);
+            };
+
+            if (isPublished) {
+                return (
+                    <div className="editor-shell">
+                        <header>
+                            <div>
+                                <h1>Published Article</h1>
+                                <p>This is the rendered output. Refresh the page to return to editing.</p>
+                            </div>
+                        </header>
+                        <PublishedArticle blocks={blocks} />
+                    </div>
+                );
+            }
+
+            return (
+                <div className="editor-shell">
+                    <header>
+                        <div>
+                            <h1>Notebook Blog Editor</h1>
+                            <p>
+                                Draft in structured blocks, just like a notebook. Press Enter for new blocks and use / to switch
+                                block types.
+                            </p>
+                        </div>
+                        <div className="editor-actions">
+                            <button className="ghost-btn" onClick={() => addBlockBelow(blocks.length - 1)}>
+                                Add Block
+                            </button>
+                            <button className="primary-btn" onClick={handlePublish}>
+                                Finish & Publish
+                            </button>
+                        </div>
+                    </header>
+                    <div className="block-list">
+                        {blocks.map((block, index) => (
+                            <BlockShell
+                                key={block.id}
+                                block={block}
+                                index={index}
+                                onChange={updateBlock}
+                                onAddBelow={addBlockBelow}
+                                onDelete={deleteBlock}
+                                onMove={moveBlock}
+                                onToggleTypeMenu={(id) =>
+                                    setActiveTypeMenu((current) => (current === id ? null : id))
+                                }
+                                activeTypeMenu={activeTypeMenu}
+                                onTypeChange={changeType}
+                            />
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<NotebookApp />);
+    </script>
+</body>
+
+</html>
